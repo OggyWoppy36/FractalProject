@@ -126,8 +126,8 @@ def main():
         if show_help:
             gui = window.get_gui()
 
-            with gui.sub_window("Controls (Press 'h' to hide)", 0.007, 0.01, 0.22, 0.25):
-                gui.text("Esc: quit\nLeft-Click: Zoom in\nRight-Click: Zoom out\n'h': Show/hide help (this window)\n's': Save current window as png\n'r': Reset zoom")
+            with gui.sub_window("Controls (Press 'h' to hide)", 0.007, 0.01, 0.22, 0.27):
+                gui.text("Esc: Quit\nLeft-Click: Zoom in\nRight-Click: Zoom out\n'h': Show/hide help (this window)\n's': Save current window as png\n'r': Reset zoom\n'c': Toggle fun mode (color)")
                 gui.text("\nZoom Speed Modifier Keys:")
                 gui.text("[No Key]: Zoom Speed 1\nShift: Zoom Speed 2\nAlt: Zoom Speed 3\nCtrl: Zoom Speed 4")
 
