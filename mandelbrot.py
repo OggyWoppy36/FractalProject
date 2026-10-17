@@ -9,16 +9,23 @@ pixels = ti.Vector.field(3, dtype=ti.f32, shape=(width, height))
 
 
 @ti.func
-def calc_color(iters, max_iters):
+def calc_color(iters, max_iters, colorful):
     col = ti.Vector([0.0, 0.0, 0.0])
     if iters < max_iters:
-        a = 1.0 - iters / max_iters
-        col = ti.Vector([a,a,a])
+        if colorful:
+            hue = 0.95 + 10 * (ti.log(ti.log(float(iters) + 1)))
+            r = 0.5 * ti.cos(3.14159 * (hue + 0.0)) + 0.5
+            g = 0.5 * ti.cos(3.14159 * (hue + 0.4)) + 0.5
+            b = 0.5 * ti.cos(3.14159 * (hue + 0.8)) + 0.5
+            col = ti.Vector([r,g,b])
+        else:
+            a = 1.0 - (iters / max_iters)
+            col = ti.Vector([a,a,a])
     return col
 
 
 @ti.kernel
-def paint(xmin: ti.f64, ymin: ti.f64, xmax: ti.f64, ymax: ti.f64, max_iters: int):
+def paint(xmin: ti.f64, ymin: ti.f64, xmax: ti.f64, ymax: ti.f64, max_iters: int, colorful: bool):
     for i, j in pixels:
         zr = xmin + (xmax-xmin) * i/width
         zi = ymin + (ymax-ymin) * j/height
@@ -37,7 +44,7 @@ def paint(xmin: ti.f64, ymin: ti.f64, xmax: ti.f64, ymax: ti.f64, max_iters: int
             zi = nexti
             iterations += 1
 
-        pixels[i, j] = calc_color(iterations, max_iters)
+        pixels[i, j] = calc_color(iterations, max_iters, colorful)
 
 
 
@@ -46,7 +53,7 @@ def main():
     window = ti.ui.Window(
         "Mandelbrot Fractal",
         (width, height),
-        vsync=False
+        vsync=True
     )
     canvas = window.get_canvas()
 
@@ -56,6 +63,7 @@ def main():
     ymax = 1.25
 
     show_help = True
+    colorful = True
 
     while window.running:
         zoom = 1.0
@@ -63,6 +71,8 @@ def main():
         if window.get_event(ti.ui.PRESS):
             if window.event.key in ("h","/","?"):
                 show_help = not show_help
+            if window.event.key in ("c","C"):
+                colorful = not colorful
 
         if window.is_pressed(ti.ui.ESCAPE):
             window.running = False
@@ -87,6 +97,8 @@ def main():
             xmax = 1.4
             ymax = 1.25
 
+       
+
         if zoom != 1.0:
             pos = window.get_cursor_pos()
             centx = xmin + (xmax - xmin) * pos[0]
@@ -105,7 +117,7 @@ def main():
         # 0.43... = inverse ln(10). this computes the log base 10 of zoom_depth
         max_iters = int(250 + 75 * max(0.0, ti.log(zoom_depth)*0.4342944819))
 
-        paint(xmin, ymin, xmax, ymax, max_iters)
+        paint(xmin, ymin, xmax, ymax, max_iters, colorful)
         canvas.set_image(pixels)
 
         if window.is_pressed(" ", ti.ui.RETURN, "s"):
