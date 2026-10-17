@@ -87,11 +87,6 @@ def main():
             xmax = 1.4
             ymax = 1.25
 
-        if window.is_pressed(" ", ti.ui.RETURN, "s"):
-            window.save_image('mandelbrot-screenshot.png')
-
-        
-
         if zoom != 1.0:
             pos = window.get_cursor_pos()
             centx = xmin + (xmax - xmin) * pos[0]
@@ -112,6 +107,9 @@ def main():
 
         paint(xmin, ymin, xmax, ymax, max_iters)
         canvas.set_image(pixels)
+
+        if window.is_pressed(" ", ti.ui.RETURN, "s"):
+            window.save_image('mandelbrot-screenshot.png')
 
         if show_help:
             gui = window.get_gui()
