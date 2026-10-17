@@ -29,13 +29,13 @@ A GPU-accelerated Mandelbrot renderer built in python using Taichi Lang for para
 - Python 3.13+
 - A GPU (not required, but will run smoother)
 
-### Installation (Windows Only)
-- Go to the [Releases](https://github.com/OggyWoppy36/FractalProject/releases) tab and download the latest release
-- Run the .exe
+### Installation
+- Go to the [Releases](https://github.com/OggyWoppy36/FractalProject/releases) tab and download the appropriate release
+- Run the .exe (or if not on Windows, unzip the file & run the source code)
 - If Windows will likely flag it as unsafe the first time you run it:
   - Click 'More Info', then 'Run Anyway'
 
-### Installation through source code
+### Run from Source
 1. Clone this repository and navigate to the project directory:
    ```bash
    git clone https://github.com/OggyWoppy36/FractalProject.git
