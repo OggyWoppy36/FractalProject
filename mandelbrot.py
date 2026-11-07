@@ -2,7 +2,11 @@ from cmath import log10
 
 import taichi as ti
 
-ti.init(arch=ti.gpu, default_fp=ti.f64)
+try:
+    ti.init(arch=ti.gpu, default_fp=ti.f64)
+except Exception:
+    print("GPU not supported for 64-bit floats. Using CPU instead")
+    ti.init(arch=ti.cpu, default_fp=ti.f64)
 
 width, height = 1200, 800
 pixels = ti.Vector.field(3, dtype=ti.f32, shape=(width, height))
