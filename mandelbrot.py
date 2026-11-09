@@ -1,5 +1,3 @@
-from cmath import log10
-
 import taichi as ti
 
 try:
@@ -69,24 +67,43 @@ def main():
     show_help = True
     colorful = True
 
+    ctrl_down = False
+    alt_down = False
+    shift_down = False
+
+
     while window.running:
         zoom = 1.0
 
-        if window.get_event(ti.ui.PRESS):
-            if window.event.key in ("h","/","?"):
+        for event in window.get_events(ti.ui.PRESS):
+            if event.key in ("h","H","/","?"):
                 show_help = not show_help
-            if window.event.key in ("c","C"):
+            elif event.key in ("c","C"):
                 colorful = not colorful
+            elif event.key == ti.ui.CTRL:
+                ctrl_down = True
+            elif event.key == ti.ui.ALT:
+                alt_down = True
+            elif event.key == ti.ui.SHIFT:
+                shift_down = True
 
+        for event in window.get_events(ti.ui.RELEASE):
+            if event.key == ti.ui.CTRL:
+                ctrl_down = False
+            elif event.key == ti.ui.ALT:
+                alt_down = False
+            elif event.key == ti.ui.SHIFT:
+                shift_down = False
+        
         if window.is_pressed(ti.ui.ESCAPE):
             window.running = False
 
         factor = 0.005
-        if window.is_pressed(ti.ui.CTRL):
+        if ctrl_down:
             factor = 0.040
-        elif window.is_pressed(ti.ui.ALT):
+        elif alt_down:
             factor = 0.025
-        elif window.is_pressed(ti.ui.SHIFT):
+        elif shift_down:
             factor = 0.012
         
 
@@ -133,7 +150,7 @@ def main():
             with gui.sub_window("Controls (Press 'h' to hide)", 0.007, 0.01, 0.22, 0.27):
                 gui.text("Esc: Quit\nLeft-Click: Zoom in\nRight-Click: Zoom out\n'h': Show/hide help (this window)\n's': Save current window as png\n'r': Reset zoom\n'c': Toggle fun mode (color)")
                 gui.text("\nZoom Speed Modifier Keys:")
-                gui.text("[No Key]: Zoom Speed 1\nShift: Zoom Speed 2\nAlt: Zoom Speed 3\nCtrl: Zoom Speed 4")
+                gui.text("[No Key]: Zoom Speed 1x\nShift: Zoom Speed 2x\nAlt: Zoom Speed 5x\nCtrl: Zoom Speed 8x")
 
         window.show()
 
