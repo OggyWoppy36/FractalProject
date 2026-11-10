@@ -2,9 +2,18 @@ import taichi as ti
 
 try:
     ti.init(arch=ti.gpu, default_fp=ti.f64)
-except Exception:
-    print("GPU not supported for 64-bit floats. Using CPU instead")
+
+    @ti.kernel
+    def test_f64() -> ti.f64:
+        x: ti.f64 = 1.0
+        return x
+    test_f64()
+    print("Running on GPU with 64-bit precision")
+except Exception as e:
+
+    print(f"GPU not supported for 64-bit floats ({e}). Using multithreaded CPU")
     ti.init(arch=ti.cpu, default_fp=ti.f64)
+    print("Running on CPU with 64-bit precision")
 
 width, height = 1200, 800
 pixels = ti.Vector.field(3, dtype=ti.f32, shape=(width, height))
