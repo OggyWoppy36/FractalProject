@@ -1,16 +1,19 @@
 import taichi as ti
+import math
 
 try:
     ti.init(arch=ti.gpu, default_fp=ti.f64)
 
+    #test gpu f64 support and log support
     @ti.kernel
     def test_f64() -> ti.f64:
-        x: ti.f64 = 1.0
-        return x
+        x: ti.f64 = 2.0
+        y: ti.f32 = ti.log(ti.cast(x, ti.f32))
+        return x + ti.cast(y, ti.f64)
+
     test_f64()
     print("Running on GPU with 64-bit precision")
 except Exception as e:
-
     print(f"GPU not supported for 64-bit floats ({e}). Using multithreaded CPU")
     ti.init(arch=ti.cpu, default_fp=ti.f64)
     print("Running on CPU with 64-bit precision")
@@ -24,7 +27,9 @@ def calc_color(iters, max_iters, colorful):
     col = ti.Vector([0.0, 0.0, 0.0])
     if iters < max_iters:
         if colorful:
-            hue = 0.95 + 10 * (ti.log(ti.log(float(iters) + 1)))
+            base = ti.cast(iters, ti.f32) + 1.0
+            first_log = ti.log(ti.max(ti.cast(base, ti.f32), ti.cast(1e-6, ti.f32)))
+            hue = 0.95 + 10.0 * ti.log(ti.max(ti.cast(first_log, ti.f32), ti.cast(1e-6, ti.f32)))
             r = 0.5 * ti.cos(3.14159 * (hue + 0.0)) + 0.5
             g = 0.5 * ti.cos(3.14159 * (hue + 0.4)) + 0.5
             b = 0.5 * ti.cos(3.14159 * (hue + 0.8)) + 0.5
@@ -145,7 +150,7 @@ def main():
 
         zoom_depth = 3.0 / (xmax - xmin)
         # 0.43... = inverse ln(10). this computes the log base 10 of zoom_depth
-        max_iters = int(250 + 75 * max(0.0, ti.log(zoom_depth)*0.4342944819))
+        max_iters = int(250 + 75 * max(0.0, math.log(zoom_depth)*0.4342944819))
 
         paint(xmin, ymin, xmax, ymax, max_iters, colorful)
         canvas.set_image(pixels)
